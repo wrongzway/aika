@@ -235,3 +235,27 @@ try {
     console.error('Fatal init error:', err);
     process.exit(1);
 }
+// Command: Tie Invite
+if (command === 'tie_invite' && isAdmin) {
+    const [allyName, inviteLink] = args;
+    if (!allyName || !inviteLink) {
+        return message.reply('Usage: !tie_invite <ally_name> <invite_link>');
+    }
+
+    if (!data.allies || !data.allies.includes(allyName)) {
+        return message.reply(`${allyName} is not in the ally list.`);
+    }
+
+    const inviteMatch = inviteLink.match(/discord(?:\.gg|app\.com\/invite)\/([a-zA-Z0-9]+)/);
+    if (!inviteMatch) {
+        return message.reply('Invalid invite link format.');
+    }
+
+    const inviteCode = inviteMatch[1];
+
+    if (!data.guildInvites) data.guildInvites = {};
+    data.guildInvites[allyName] = inviteCode;
+    saveData(data);
+
+    return message.reply(`Tied invite \`${inviteCode}\` to ally \`${allyName}\`.`);
+}
